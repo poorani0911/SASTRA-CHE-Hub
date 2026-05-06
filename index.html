@@ -1,687 +1,923 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SASTRA ChE Learning Hub</title>
+  <title>ChE Learning Materials — SASTRA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
   <style>
+    :root {
+      --ink:       #0e1117;
+      --ink-soft:  #4a4e5a;
+      --ink-muted: #9198a8;
+      --cream:     #f7f5f0;
+      --white:     #ffffff;
+      --teal:      #0d6e56;
+      --teal-lt:   #e0f2ec;
+      --teal-md:   #a8ddd0;
+      --amber:     #c9620f;
+      --amber-lt:  #fdebd9;
+      --blue:      #1a5fa8;
+      --blue-lt:   #ddeaf9;
+      --rose:      #b83547;
+      --rose-lt:   #fce8ec;
+      --border:    #e4e1d8;
+      --shadow:    0 2px 12px rgba(14,17,23,0.08);
+      --shadow-lg: 0 8px 40px rgba(14,17,23,0.14);
+      --r:         12px;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f5f4f0; color: #1a1a1a; min-height: 100vh; }
 
-    .topbar { background: #fff; border-bottom: 1px solid #e8e6e0; padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
-    .topbar-left { display: flex; align-items: center; gap: 12px; }
-    .logo-icon { width: 32px; height: 32px; background: #0F6E56; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; font-weight: 700; }
-    .topbar-title { font-size: 16px; font-weight: 600; }
-    .topbar-sub { font-size: 12px; color: #888; margin-top: 1px; }
-    .topbar-right { display: flex; align-items: center; gap: 10px; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      min-height: 100vh;
+    }
 
-    .badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: #E1F5EE; color: #0F6E56; border: 1px solid #9FE1CB; font-weight: 500; transition: all 0.2s; }
-    .badge.contributor { background: #FAEEDA; color: #854F0B; border-color: #FAC775; }
+    /* ── TOPBAR ── */
+    .topbar {
+      background: var(--ink);
+      padding: 0 32px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 14px; }
+    .logo {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--teal) 0%, #1aad8c 100%);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Fraunces', serif;
+      color: white; font-size: 20px; font-weight: 700;
+      letter-spacing: -1px;
+    }
+    .topbar-title {
+      font-family: 'Fraunces', serif;
+      font-size: 17px; font-weight: 600;
+      color: white; line-height: 1.2;
+    }
+    .topbar-sub { font-size: 11px; color: #8a909e; margin-top: 2px; letter-spacing: 0.04em; text-transform: uppercase; }
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
 
-    .btn { font-size: 13px; padding: 7px 16px; border-radius: 8px; border: 1px solid #d0cfc8; background: white; color: #1a1a1a; cursor: pointer; font-weight: 500; transition: all 0.15s; }
-    .btn:hover { background: #f0efe8; }
-    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-    .btn-primary { background: #0F6E56; color: white; border-color: #0F6E56; }
-    .btn-primary:hover { background: #085041; }
-    .btn-danger { background: #fff; color: #993C1D; border-color: #993C1D; }
-    .btn-danger:hover { background: #FAECE7; }
+    .tbtn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px; font-weight: 500;
+      padding: 7px 16px;
+      border-radius: 8px;
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .tbtn-ghost { background: transparent; border-color: #3a3f4e; color: #bcc2cc; }
+    .tbtn-ghost:hover { background: #1e2330; color: white; border-color: #4a5060; }
+    .tbtn-teal { background: var(--teal); color: white; border-color: var(--teal); }
+    .tbtn-teal:hover { background: #0a5a45; }
+    .tbtn-contribute { background: white; color: var(--ink); border-color: white; }
+    .tbtn-contribute:hover { background: #f0ede6; }
+    .tbtn-sm { font-size: 11px; padding: 5px 11px; }
 
-    .page { max-width: 900px; margin: 0 auto; padding: 28px 20px; }
+    /* ── HERO BAND ── */
+    .hero {
+      background: linear-gradient(135deg, #0e1117 0%, #1a2535 50%, #0d3d2e 100%);
+      padding: 48px 32px 44px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .hero-inner { max-width: 920px; margin: 0 auto; position: relative; }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(13,110,86,0.25);
+      border: 1px solid rgba(13,110,86,0.5);
+      color: #5dd6b5;
+      font-size: 11px; font-weight: 500;
+      padding: 4px 12px; border-radius: 20px;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .hero-tag::before { content: '●'; font-size: 7px; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+    .hero h1 {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(26px, 4vw, 40px);
+      font-weight: 700;
+      color: white;
+      line-height: 1.15;
+      margin-bottom: 10px;
+    }
+    .hero h1 em { font-style: italic; color: #5dd6b5; }
+    .hero-sub { font-size: 14px; color: #8a909e; max-width: 480px; line-height: 1.6; }
+    .hero-stats {
+      display: flex; gap: 32px; margin-top: 28px; flex-wrap: wrap;
+    }
+    .hstat { }
+    .hstat-num {
+      font-family: 'Fraunces', serif;
+      font-size: 28px; font-weight: 700; color: white; line-height: 1;
+    }
+    .hstat-label { font-size: 11px; color: #6a707e; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.05em; }
 
-    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 10px; margin-bottom: 24px; }
-    .stat-card { background: white; border-radius: 10px; border: 1px solid #e8e6e0; padding: 14px 16px; }
-    .stat-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
-    .stat-num { font-size: 26px; font-weight: 600; }
+    /* ── PAGE ── */
+    .page { max-width: 920px; margin: 0 auto; padding: 32px 20px; }
 
-    .controls { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
-    .search-box { flex: 1; min-width: 180px; padding: 8px 14px; font-size: 13px; border: 1px solid #d0cfc8; border-radius: 8px; background: white; color: #1a1a1a; outline: none; }
-    .search-box:focus { border-color: #0F6E56; }
-    .filter-btn { font-size: 12px; padding: 6px 14px; border-radius: 20px; border: 1px solid #d0cfc8; background: white; color: #555; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
-    .filter-btn.active { background: #1a1a1a; color: white; border-color: #1a1a1a; }
-    .filter-btn:hover:not(.active) { background: #f0efe8; }
+    /* ── ADMIN BANNER ── */
+    .admin-banner {
+      display: none;
+      background: linear-gradient(135deg, #1a5fa8, #1a3fa8);
+      border-radius: var(--r);
+      padding: 14px 20px;
+      margin-bottom: 24px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .admin-banner-text { font-size: 13px; color: white; font-weight: 500; }
 
-    .section-title { font-size: 13px; font-weight: 600; color: #555; text-transform: uppercase; letter-spacing: 0.05em; margin: 20px 0 10px; display: flex; align-items: center; gap: 8px; }
-    .section-title::after { content: ''; flex: 1; height: 1px; background: #e8e6e0; }
-    .section-count { font-size: 11px; background: #f0efe8; color: #888; padding: 2px 8px; border-radius: 20px; font-weight: 400; text-transform: none; letter-spacing: 0; }
+    /* ── SEARCH & FILTERS ── */
+    .search-section { margin-bottom: 20px; }
+    .search-wrap {
+      position: relative; margin-bottom: 12px;
+    }
+    .search-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      color: var(--ink-muted); font-size: 15px; pointer-events: none;
+    }
+    .search-box {
+      width: 100%; padding: 11px 14px 11px 40px;
+      font-size: 14px; font-family: 'DM Sans', sans-serif;
+      border: 1.5px solid var(--border);
+      border-radius: var(--r);
+      background: var(--white);
+      color: var(--ink); outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .search-box:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(13,110,86,0.1); }
+    .search-box::placeholder { color: var(--ink-muted); }
 
-    .results-label { font-size: 13px; color: #888; margin-bottom: 10px; font-weight: 500; }
-    .file-list { display: grid; gap: 8px; margin-bottom: 8px; }
+    .filters { display: flex; gap: 7px; flex-wrap: wrap; }
+    .filter-btn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px; font-weight: 500;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      color: var(--ink-soft);
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .filter-btn.active { background: var(--ink); color: white; border-color: var(--ink); }
+    .filter-btn:hover:not(.active) { background: #eeeae0; border-color: #ccc9c0; }
 
-    .file-card { background: white; border-radius: 10px; border: 1px solid #e8e6e0; padding: 14px 16px; display: flex; align-items: center; gap: 14px; transition: box-shadow 0.15s, border-color 0.15s; cursor: pointer; text-decoration: none; color: inherit; }
-    .file-card:hover { border-color: #9FE1CB; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    /* ── RESULTS BAR ── */
+    .results-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .results-label { font-size: 13px; color: var(--ink-muted); font-weight: 500; }
+    .refresh-btn { font-size: 12px; color: var(--teal); background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; }
+    .refresh-btn:hover { text-decoration: underline; }
 
-    .file-icon { width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-    .file-icon.notes { background: #E6F1FB; }
-    .file-icon.refs  { background: #E1F5EE; }
-    .file-icon.past  { background: #FAEEDA; }
-    .file-icon.lab   { background: #FAECE7; }
-    .file-icon.other { background: #F1EFE8; }
+    /* ── SECTION HEADING ── */
+    .section-title {
+      display: flex; align-items: center; gap: 10px;
+      margin: 28px 0 12px;
+    }
+    .section-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+    .section-icon.notes { background: var(--blue-lt); }
+    .section-icon.refs  { background: var(--teal-lt); }
+    .section-icon.past  { background: var(--amber-lt); }
+    .section-icon.lab   { background: var(--rose-lt); }
+    .section-icon.other { background: #f0ede6; }
+    .section-text { }
+    .section-name {
+      font-family: 'Fraunces', serif;
+      font-size: 16px; font-weight: 600; color: var(--ink);
+    }
+    .section-count {
+      font-size: 11px; color: var(--ink-muted);
+      background: #eeeae0; padding: 2px 8px; border-radius: 20px;
+      margin-left: 6px; font-weight: 500;
+    }
+    .section-line { flex: 1; height: 1px; background: var(--border); }
 
+    /* ── SUBFOLDER LABEL ── */
+    .subfolder-label {
+      font-size: 11px; font-weight: 600;
+      color: var(--ink-muted);
+      text-transform: uppercase; letter-spacing: 0.07em;
+      margin: 14px 0 7px 4px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .subfolder-label::before { content: '↳'; color: var(--teal); }
+
+    /* ── FILE CARDS ── */
+    .file-list { display: grid; gap: 8px; margin-bottom: 4px; }
+    .file-card {
+      background: var(--white);
+      border-radius: var(--r);
+      border: 1.5px solid var(--border);
+      padding: 14px 18px;
+      display: flex; align-items: center; gap: 14px;
+      text-decoration: none; color: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+      cursor: pointer;
+    }
+    .file-card:hover {
+      border-color: var(--teal-md);
+      box-shadow: var(--shadow);
+      transform: translateY(-1px);
+    }
+    .file-thumb {
+      width: 40px; height: 40px; border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .file-thumb.notes { background: var(--blue-lt); }
+    .file-thumb.refs  { background: var(--teal-lt); }
+    .file-thumb.past  { background: var(--amber-lt); }
+    .file-thumb.lab   { background: var(--rose-lt); }
+    .file-thumb.other { background: #f0ede6; }
     .file-info { flex: 1; min-width: 0; }
-    .file-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .file-meta { font-size: 12px; color: #888; margin-top: 3px; }
+    .file-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink); }
+    .file-meta { font-size: 12px; color: var(--ink-muted); margin-top: 3px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .meta-dot { color: #ccc; }
+    .ext-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.05em;
+      padding: 2px 6px; border-radius: 4px; background: #f0ede6; color: var(--ink-soft);
+    }
+    .cat-pill {
+      font-size: 11px; font-weight: 500;
+      padding: 3px 10px; border-radius: 20px;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .cat-pill.notes { background: var(--blue-lt); color: var(--blue); }
+    .cat-pill.refs  { background: var(--teal-lt); color: var(--teal); }
+    .cat-pill.past  { background: var(--amber-lt); color: var(--amber); }
+    .cat-pill.lab   { background: var(--rose-lt); color: var(--rose); }
+    .cat-pill.other { background: #f0ede6; color: var(--ink-soft); }
 
-    .cat-pill { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 500; white-space: nowrap; flex-shrink: 0; }
-    .cat-pill.notes { background: #E6F1FB; color: #185FA5; }
-    .cat-pill.refs  { background: #E1F5EE; color: #0F6E56; }
-    .cat-pill.past  { background: #FAEEDA; color: #854F0B; }
-    .cat-pill.lab   { background: #FAECE7; color: #993C1D; }
-    .cat-pill.other { background: #F1EFE8; color: #5F5E5A; }
+    /* ── EMPTY ── */
+    .empty { text-align: center; padding: 60px 20px; color: var(--ink-muted); }
+    .empty-icon { font-size: 36px; margin-bottom: 10px; }
+    .empty p { font-size: 14px; }
 
-    .empty { text-align: center; padding: 48px 20px; color: #888; }
-    .empty-icon { font-size: 32px; margin-bottom: 8px; }
-    .empty p { font-size: 13px; margin-top: 4px; }
+    /* ── ERROR BANNER ── */
+    .error-banner {
+      display: none;
+      background: var(--rose-lt); border: 1.5px solid #f5b3be;
+      border-radius: var(--r); padding: 14px 18px;
+      margin-bottom: 20px; font-size: 13px; color: #8c1a2a; line-height: 1.5;
+    }
 
-    .error-banner { background: #FAECE7; border: 1px solid #F5C4B3; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; font-size: 13px; color: #712B13; display: none; }
-
-    .vol-banner { background: #FAEEDA; border: 1px solid #FAC775; border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
-    .vol-banner-text { font-size: 13px; color: #633806; }
-    .vol-banner-text strong { font-weight: 600; }
-
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; align-items: center; justify-content: center; }
-    .modal-overlay.open { display: flex; }
-    .modal { background: white; border-radius: 14px; padding: 28px; width: 100%; max-width: 480px; margin: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.18); max-height: 90vh; overflow-y: auto; }
-    .modal h3 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
-    .modal p.sub { font-size: 13px; color: #888; margin-bottom: 20px; line-height: 1.5; }
-    .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.04em; }
-    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 9px 12px; font-size: 13px; border: 1px solid #d0cfc8; border-radius: 8px; background: white; color: #1a1a1a; outline: none; font-family: inherit; }
-    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #0F6E56; }
-    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
-
-    .alert { padding: 12px 16px; border-radius: 8px; font-size: 13px; margin-bottom: 14px; display: none; line-height: 1.5; }
-    .alert.success { background: #E1F5EE; color: #085041; }
-    .alert.error   { background: #FAECE7; color: #712B13; }
-
-    .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.4); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
-    .spinner.dark { border-color: #ccc; border-top-color: #0F6E56; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .skeleton-card { background: white; border-radius: 10px; border: 1px solid #e8e6e0; padding: 14px 16px; display: flex; align-items: center; gap: 14px; }
-    .skel { background: linear-gradient(90deg, #f0efe8 25%, #e8e6e0 50%, #f0efe8 75%); background-size: 200% 100%; animation: shimmer 1.2s infinite; border-radius: 6px; }
+    /* ── SKELETONS ── */
+    .skeleton-card { background: var(--white); border-radius: var(--r); border: 1.5px solid var(--border); padding: 14px 18px; display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+    .skel { background: linear-gradient(90deg,#eeeae0 25%,#e4e0d5 50%,#eeeae0 75%); background-size: 200% 100%; animation: shimmer 1.3s infinite; border-radius: 6px; }
     @keyframes shimmer { to { background-position: -200% 0; } }
 
-    .refresh-btn { font-size: 12px; color: #0F6E56; background: none; border: none; cursor: pointer; padding: 0; text-decoration: underline; }
+    /* ── FOOTER ── */
+    .footer {
+      text-align: center; padding: 40px 20px 28px;
+      font-size: 12px; color: var(--ink-muted); line-height: 2;
+      border-top: 1px solid var(--border);
+    }
+    .footer a { color: var(--teal); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
 
-    .footer { text-align: center; padding: 32px 20px 20px; font-size: 12px; color: #aaa; line-height: 1.8; }
+    /* ── MODALS ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(10,12,18,0.6);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 0;
+      width: 100%; max-width: 500px;
+      margin: 20px;
+      box-shadow: var(--shadow-lg);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      padding: 24px 28px 0;
+      margin-bottom: 6px;
+    }
+    .modal-header h3 {
+      font-family: 'Fraunces', serif;
+      font-size: 22px; font-weight: 700; color: var(--ink);
+      margin-bottom: 6px;
+    }
+    .modal-header p.sub { font-size: 13px; color: var(--ink-muted); line-height: 1.6; }
+    .modal-divider { height: 1px; background: var(--border); margin: 16px 0; }
+    .modal-body { padding: 0 28px 24px; }
+    .modal-accent {
+      height: 4px; border-radius: 16px 16px 0 0;
+      background: linear-gradient(90deg, var(--teal), #1aad8c);
+    }
+    .modal-accent.amber { background: linear-gradient(90deg, var(--amber), #e8821a); }
+    .modal-accent.blue  { background: linear-gradient(90deg, var(--blue), #2478d4); }
 
-    @media (max-width: 500px) {
-      .topbar-right .btn { font-size: 11px; padding: 6px 10px; }
-      .stat-num { font-size: 20px; }
-      .file-name { font-size: 13px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block; font-size: 11px; font-weight: 600;
+      color: var(--ink-soft); margin-bottom: 6px;
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 10px 13px;
+      font-size: 13px; font-family: 'DM Sans', sans-serif;
+      border: 1.5px solid var(--border); border-radius: 9px;
+      background: var(--cream); color: var(--ink); outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(13,110,86,0.1);
+      background: white;
+    }
+    .form-group input::placeholder, .form-group textarea::placeholder { color: #b0b5be; }
+
+    .modal-actions {
+      display: flex; gap: 10px; justify-content: flex-end;
+      padding-top: 8px;
+    }
+
+    .mbtn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px; font-weight: 600;
+      padding: 9px 20px; border-radius: 9px;
+      border: 1.5px solid transparent;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .mbtn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .mbtn-cancel { background: var(--cream); color: var(--ink-soft); border-color: var(--border); }
+    .mbtn-cancel:hover { background: #eeeae0; }
+    .mbtn-primary { background: var(--teal); color: white; border-color: var(--teal); }
+    .mbtn-primary:hover { background: #0a5a45; }
+    .mbtn-amber { background: var(--amber); color: white; border-color: var(--amber); }
+    .mbtn-amber:hover { background: #a85208; }
+    .mbtn-blue { background: var(--blue); color: white; border-color: var(--blue); }
+    .mbtn-blue:hover { background: #144d8a; }
+    .mbtn-danger { background: var(--rose-lt); color: var(--rose); border-color: #f5b3be; }
+    .mbtn-danger:hover { background: #f8d0d8; }
+
+    .alert { padding: 12px 14px; border-radius: 9px; font-size: 13px; margin-bottom: 16px; display: none; line-height: 1.5; }
+    .alert.success { background: var(--teal-lt); color: #085041; border: 1px solid var(--teal-md); }
+    .alert.error   { background: var(--rose-lt); color: #8c1a2a; border: 1px solid #f5b3be; }
+
+    .spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid rgba(255,255,255,0.35); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* admin vol list */
+    .vol-row { display: flex; align-items: center; justify-content: space-between; background: var(--cream); border-radius: 9px; padding: 10px 13px; }
+    .vol-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--teal-lt); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--teal); flex-shrink: 0; }
+
+    @media(max-width:600px){
+      .topbar { padding: 0 16px; height: 58px; }
+      .topbar-title { font-size: 13px; }
+      .tbtn { font-size: 11px; padding: 5px 10px; }
+      .hero { padding: 32px 20px 28px; }
+      .hero-stats { gap: 20px; }
+      .page { padding: 24px 16px; }
+      .modal { margin: 12px; }
+      .modal-header, .modal-body { padding-left: 20px; padding-right: 20px; }
     }
   </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
-<div class="topbar">
+<!-- ══ TOPBAR ══ -->
+<header class="topbar">
   <div class="topbar-left">
-    <div class="logo-icon">S</div>
+    <div class="logo">C</div>
     <div>
-      <div class="topbar-title">SASTRA Learning Hub</div>
-      <div class="topbar-sub">Chemical Engineering</div>
+      <div class="topbar-title">Chemical Engineering Learning Materials</div>
+      <div class="topbar-sub">SASTRA Deemed University</div>
     </div>
   </div>
   <div class="topbar-right">
-    <span class="badge" id="role-badge">Student</span>
-    <button class="btn" id="admin-login-btn" onclick="openAdminLoginModal()" style="font-size:12px; padding:6px 12px; color:#888; border-color:#e0dfd8;">Admin</button>
-    <button class="btn" id="vol-login-btn" onclick="openLoginModal()">Volunteer Login</button>
-    <button class="btn btn-primary" onclick="openContributeModal()">+ Contribute</button>
+    <button class="tbtn tbtn-teal" onclick="openVolunteerModal()">Join as Volunteer</button>
+    <button class="tbtn tbtn-ghost tbtn-sm" id="admin-login-btn" onclick="openAdminLoginModal()">Admin</button>
+    <button class="tbtn tbtn-contribute" onclick="openContributeModal()">+ Contribute</button>
+  </div>
+</header>
+
+<!-- ══ HERO ══ -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Live from Google Drive</div>
+    <h1>Your <em>complete</em> resource<br/>for ChE learning</h1>
+    <p class="hero-sub">Lecture notes, reference PDFs, past papers, and lab manuals — all in one place, always up to date.</p>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-num" id="stat-total">—</div><div class="hstat-label">Materials</div></div>
+      <div class="hstat"><div class="hstat-num">5</div><div class="hstat-label">Categories</div></div>
+      <div class="hstat"><div class="hstat-num" id="stat-vols">—</div><div class="hstat-label">Volunteers</div></div>
+      <div class="hstat"><div class="hstat-num" id="stat-updated" style="font-size:16px;padding-top:6px;">—</div><div class="hstat-label">Last Updated</div></div>
+    </div>
   </div>
 </div>
 
-<!-- PAGE -->
+<!-- ══ PAGE ══ -->
 <div class="page">
 
-  <!-- Error banner -->
   <div class="error-banner" id="error-banner"></div>
 
-  <!-- Volunteer banner -->
-  <div class="vol-banner" id="vol-banner" style="display:none;">
-    <div class="vol-banner-text">Logged in as <strong id="vol-name-display">Volunteer</strong> — Manage files directly from Google Drive.</div>
-    <button class="btn btn-danger" onclick="logoutVolunteer()">Log out</button>
-  </div>
-
   <!-- Admin banner -->
-  <div id="admin-banner" style="display:none; background:#E6F1FB; border:1px solid #B5D4F4; border-radius:10px; padding:14px 18px; display:none; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:20px;">
-    <div style="font-size:13px; color:#0C447C;">Logged in as <strong>Admin</strong> — You can manage volunteers and change the volunteer password.</div>
-    <div style="display:flex; gap:8px;">
-      <button class="btn" style="font-size:12px; padding:6px 12px; background:#185FA5; color:white; border-color:#185FA5;" onclick="openAdminPanel()">Manage Volunteers</button>
-      <button class="btn btn-danger" onclick="logoutAdmin()" style="font-size:12px; padding:6px 12px;">Log out</button>
+  <div class="admin-banner" id="admin-banner">
+    <div class="admin-banner-text">⚙ Logged in as Admin</div>
+    <div style="display:flex;gap:8px;">
+      <button class="tbtn tbtn-ghost tbtn-sm" style="border-color:rgba(255,255,255,0.3);color:white;" onclick="openAdminPanel()">Manage Volunteers</button>
+      <button class="tbtn tbtn-ghost tbtn-sm" style="border-color:rgba(255,255,255,0.3);color:#f99;" onclick="logoutAdmin()">Log out</button>
     </div>
   </div>
 
-  <!-- Stats -->
-  <div class="stats">
-    <div class="stat-card"><div class="stat-label">Total Materials</div><div class="stat-num" id="stat-total">—</div></div>
-    <div class="stat-card"><div class="stat-label">Categories</div><div class="stat-num">5</div></div>
-    <div class="stat-card"><div class="stat-label">Last Updated</div><div class="stat-num" id="stat-updated" style="font-size:14px; padding-top:6px;">—</div></div>
-    <div class="stat-card"><div class="stat-label">Volunteers</div><div class="stat-num">3</div></div>
+  <!-- Search -->
+  <div class="search-section">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-box" placeholder="Search by name, topic, or category…" oninput="searchFiles(this.value)"/>
+    </div>
+    <div class="filters">
+      <button class="filter-btn active" data-cat="all"   onclick="filterCat(this)">All</button>
+      <button class="filter-btn" data-cat="notes"        onclick="filterCat(this)">📄 Lecture Notes</button>
+      <button class="filter-btn" data-cat="refs"         onclick="filterCat(this)">📚 Reference PDFs</button>
+      <button class="filter-btn" data-cat="past"         onclick="filterCat(this)">📝 Past Papers</button>
+      <button class="filter-btn" data-cat="lab"          onclick="filterCat(this)">🔬 Lab Manuals</button>
+      <button class="filter-btn" data-cat="other"        onclick="filterCat(this)">📁 Other</button>
+    </div>
   </div>
 
-  <!-- Search & Filter -->
-  <div class="controls">
-    <input type="text" class="search-box" placeholder="Search materials…" oninput="searchFiles(this.value)" />
-    <button class="filter-btn active" data-cat="all"   onclick="filterCat(this)">All</button>
-    <button class="filter-btn" data-cat="notes"        onclick="filterCat(this)">Lecture Notes</button>
-    <button class="filter-btn" data-cat="refs"         onclick="filterCat(this)">Reference PDFs</button>
-    <button class="filter-btn" data-cat="past"         onclick="filterCat(this)">Past Papers</button>
-    <button class="filter-btn" data-cat="lab"          onclick="filterCat(this)">Lab Manuals</button>
-    <button class="filter-btn" data-cat="other"        onclick="filterCat(this)">Other</button>
-  </div>
-
-  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
-    <div class="results-label" id="results-label">Loading from Google Drive…</div>
+  <div class="results-bar">
+    <span class="results-label" id="results-label">Loading from Google Drive…</span>
     <button class="refresh-btn" onclick="loadAllFiles()">↻ Refresh</button>
   </div>
 
-  <!-- File sections (one per category) -->
   <div id="files-container">
-    <!-- Skeletons -->
     <div id="loading-skeletons">
-      <div class="skeleton-card" style="margin-bottom:8px;">
-        <div class="skel" style="width:38px;height:38px;border-radius:8px;flex-shrink:0;"></div>
-        <div style="flex:1;"><div class="skel" style="height:14px;width:60%;margin-bottom:6px;"></div><div class="skel" style="height:11px;width:40%;"></div></div>
-      </div>
-      <div class="skeleton-card" style="margin-bottom:8px;">
-        <div class="skel" style="width:38px;height:38px;border-radius:8px;flex-shrink:0;opacity:0.7;"></div>
-        <div style="flex:1;"><div class="skel" style="height:14px;width:50%;margin-bottom:6px;opacity:0.7;"></div><div class="skel" style="height:11px;width:35%;opacity:0.7;"></div></div>
-      </div>
-      <div class="skeleton-card">
-        <div class="skel" style="width:38px;height:38px;border-radius:8px;flex-shrink:0;opacity:0.4;"></div>
-        <div style="flex:1;"><div class="skel" style="height:14px;width:45%;margin-bottom:6px;opacity:0.4;"></div><div class="skel" style="height:11px;width:30%;opacity:0.4;"></div></div>
-      </div>
+      <div class="skeleton-card"><div class="skel" style="width:40px;height:40px;border-radius:9px;flex-shrink:0;"></div><div style="flex:1;"><div class="skel" style="height:14px;width:55%;margin-bottom:7px;"></div><div class="skel" style="height:11px;width:35%;"></div></div></div>
+      <div class="skeleton-card" style="opacity:.7;"><div class="skel" style="width:40px;height:40px;border-radius:9px;flex-shrink:0;"></div><div style="flex:1;"><div class="skel" style="height:14px;width:48%;margin-bottom:7px;"></div><div class="skel" style="height:11px;width:30%;"></div></div></div>
+      <div class="skeleton-card" style="opacity:.4;"><div class="skel" style="width:40px;height:40px;border-radius:9px;flex-shrink:0;"></div><div style="flex:1;"><div class="skel" style="height:14px;width:42%;margin-bottom:7px;"></div><div class="skel" style="height:11px;width:25%;"></div></div></div>
     </div>
     <div id="file-sections"></div>
   </div>
 </div>
 
-<div class="footer">
+<footer class="footer">
   SASTRA Deemed University · Department of Chemical Engineering<br/>
-  Files hosted on Google Drive · Automatically synced · Built by student volunteers<br/>
-  <a href="https://drive.google.com/drive/folders/1kzvOdMhi1H2JI3bWk-xunTGS0IwfKvt6" target="_blank" style="color:#0F6E56;">Open Drive Folder</a>
-</div>
+  Files hosted on Google Drive · Automatically synced with every refresh<br/>
+  <a href="https://drive.google.com/drive/folders/1kzvOdMhi1H2JI3bWk-xunTGS0IwfKvt6" target="_blank">Open Drive Folder ↗</a>
+</footer>
 
 
-<!-- CONTRIBUTE MODAL -->
+<!-- ══ CONTRIBUTE MODAL ══ -->
 <div class="modal-overlay" id="contribute-modal">
   <div class="modal">
-    <h3>Contribute a Material</h3>
-    <p class="sub">Upload your file to Google Drive first, make it shareable (Anyone with link → Viewer), then paste the link below. Your submission will be emailed to the admin for review.</p>
-    <div class="alert" id="c-alert"></div>
-    <div class="form-group"><label>Your Name &amp; Roll Number</label><input type="text" id="c-name" placeholder="e.g. Poorni — 114021116001" /></div>
-    <div class="form-group"><label>Material Title</label><input type="text" id="c-title" placeholder="e.g. CHE401 Unit 3 Notes" /></div>
-    <div class="form-group">
-      <label>Category</label>
-      <select id="c-cat">
-        <option value="">— Select —</option>
-        <option value="Lecture Notes">Lecture Notes</option>
-        <option value="Reference PDFs">Reference PDF</option>
-        <option value="Past Papers">Past Paper</option>
-        <option value="Lab Manuals">Lab Manual</option>
-        <option value="Other">Other</option>
-      </select>
+    <div class="modal-accent amber"></div>
+    <div class="modal-header">
+      <h3>Contribute a Material</h3>
+      <p class="sub">Upload your file to Google Drive, make it shareable (Anyone with link → Viewer), then paste the link below. The admin will review and add it.</p>
     </div>
-    <div class="form-group"><label>Google Drive Link (shareable, view-only)</label><input type="url" id="c-link" placeholder="https://drive.google.com/file/d/…" /></div>
-    <div class="form-group"><label>Description (optional)</label><textarea id="c-desc" rows="2" placeholder="What does this cover?"></textarea></div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('contribute-modal')">Cancel</button>
-      <button class="btn btn-primary" id="c-submit-btn" onclick="submitContribution()">Send to Admin</button>
+    <div class="modal-divider"></div>
+    <div class="modal-body">
+      <div class="alert" id="c-alert"></div>
+      <div class="form-group">
+        <label>Your Name &amp; Roll Number</label>
+        <input type="text" id="c-name" placeholder="Name — 126002036"/>
+      </div>
+      <div class="form-group">
+        <label>Your Email ID</label>
+        <input type="email" id="c-email" placeholder="126002036@sastra.ac.in"/>
+      </div>
+      <div class="form-group">
+        <label>Material Title</label>
+        <input type="text" id="c-title" placeholder="e.g. CHE401 Unit 3 Notes"/>
+      </div>
+      <div class="form-group">
+        <label>Category</label>
+        <select id="c-cat">
+          <option value="">— Select category —</option>
+          <option>Lecture Notes</option>
+          <option>Reference PDFs</option>
+          <option>Past Papers</option>
+          <option>Lab Manuals</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Google Drive Link (view-only)</label>
+        <input type="url" id="c-link" placeholder="https://drive.google.com/file/d/…"/>
+      </div>
+      <div class="form-group">
+        <label>Description (optional)</label>
+        <textarea id="c-desc" rows="2" placeholder="What topics does this cover?"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="mbtn mbtn-cancel" onclick="closeModal('contribute-modal')">Cancel</button>
+        <button class="mbtn mbtn-amber" id="c-submit-btn" onclick="submitContribution()">Send to Admin →</button>
+      </div>
     </div>
   </div>
 </div>
 
 
-<!-- VOLUNTEER LOGIN MODAL -->
-<div class="modal-overlay" id="login-modal">
+<!-- ══ JOIN AS VOLUNTEER MODAL ══ -->
+<div class="modal-overlay" id="volunteer-modal">
   <div class="modal">
-    <h3>Volunteer Login</h3>
-    <p class="sub">Enter your name and the password the admin gave you. Volunteers manage files directly from the Google Drive folder — no changes needed here.</p>
-    <div class="alert" id="l-alert"></div>
-    <div class="form-group"><label>Your Name</label><input type="text" id="l-name" placeholder="Your name" /></div>
-    <div class="form-group"><label>Volunteer Password</label><input type="password" id="l-pass" placeholder="Volunteer password" onkeydown="if(event.key==='Enter') loginVolunteer()" /></div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('login-modal')">Cancel</button>
-      <button class="btn btn-primary" onclick="loginVolunteer()">Log In</button>
+    <div class="modal-accent"></div>
+    <div class="modal-header">
+      <h3>Join as Volunteer</h3>
+      <p class="sub">Volunteers get Google Drive editor access to upload and manage learning materials. Fill in your details and the admin will add your Google account.</p>
+    </div>
+    <div class="modal-divider"></div>
+    <div class="modal-body">
+      <div class="alert" id="v-alert"></div>
+      <div class="form-group">
+        <label>Your Full Name</label>
+        <input type="text" id="v-name" placeholder="Name — 126002036"/>
+      </div>
+      <div class="form-group">
+        <label>Gmail / Google Account Email</label>
+        <input type="email" id="v-email" placeholder="126002036@sastra.ac.in"/>
+      </div>
+      <div class="form-group">
+        <label>Roll Number</label>
+        <input type="text" id="v-roll" placeholder="126002036"/>
+      </div>
+      <div class="form-group">
+        <label>Year &amp; Department</label>
+        <input type="text" id="v-dept" placeholder="e.g. 4th Year, Chemical Engineering"/>
+      </div>
+      <div class="form-group">
+        <label>Why do you want to contribute? (optional)</label>
+        <textarea id="v-reason" rows="2" placeholder="Brief reason…"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="mbtn mbtn-cancel" onclick="closeModal('volunteer-modal')">Cancel</button>
+        <button class="mbtn mbtn-primary" id="v-submit-btn" onclick="submitVolunteerRequest()">Send Request →</button>
+      </div>
     </div>
   </div>
 </div>
 
 
-<!-- VOLUNTEER INSTRUCTIONS MODAL -->
-<div class="modal-overlay" id="vol-help-modal">
-  <div class="modal">
-    <h3>How to add or remove files</h3>
-    <p class="sub">Since files are read live from Google Drive, manage them directly there:</p>
-    <div style="display:grid; gap:12px; font-size:13px; line-height:1.6;">
-      <div style="background:#E1F5EE; border-radius:8px; padding:12px 14px; color:#085041;">
-        <strong>➕ To ADD a file:</strong><br/>
-        Open the Drive folder → go to the right subfolder (e.g. "Lecture Notes") → drag and drop your PDF → it appears on the site within seconds after refreshing.
-      </div>
-      <div style="background:#FAECE7; border-radius:8px; padding:12px 14px; color:#712B13;">
-        <strong>🗑️ To REMOVE a file:</strong><br/>
-        Open the Drive folder → find the file → right-click → Move to Trash. It disappears from the site after refreshing.
-      </div>
-      <div style="background:#E6F1FB; border-radius:8px; padding:12px 14px; color:#0C447C;">
-        <strong>📁 Drive folder structure:</strong><br/>
-        SASTRA ChE Hub/<br/>
-        &nbsp;&nbsp;├── Lecture Notes/<br/>
-        &nbsp;&nbsp;├── Reference PDFs/<br/>
-        &nbsp;&nbsp;├── Past Papers/<br/>
-        &nbsp;&nbsp;├── Lab Manuals/<br/>
-        &nbsp;&nbsp;└── Other/
-      </div>
-    </div>
-    <div style="margin-top:16px;">
-      <a href="https://drive.google.com/drive/folders/1kzvOdMhi1H2JI3bWk-xunTGS0IwfKvt6" target="_blank" class="btn btn-primary" style="display:inline-block; text-decoration:none;">Open Drive Folder →</a>
-    </div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('vol-help-modal')">Close</button>
-    </div>
-  </div>
-</div>
-
-
-<!-- ADMIN LOGIN MODAL -->
+<!-- ══ ADMIN LOGIN MODAL ══ -->
 <div class="modal-overlay" id="admin-login-modal">
   <div class="modal">
-    <h3>Admin Login</h3>
-    <p class="sub">Admin access lets you add/remove volunteers and change the volunteer password.</p>
-    <div class="alert" id="al-alert"></div>
-    <div class="form-group"><label>Admin Password</label><input type="password" id="al-pass" placeholder="Admin password" onkeydown="if(event.key==='Enter') loginAdmin()" /></div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('admin-login-modal')">Cancel</button>
-      <button class="btn btn-primary" onclick="loginAdmin()">Log In</button>
+    <div class="modal-accent blue"></div>
+    <div class="modal-header">
+      <h3>Admin Login</h3>
+      <p class="sub">Enter the admin password to manage volunteers and site settings.</p>
+    </div>
+    <div class="modal-divider"></div>
+    <div class="modal-body">
+      <div class="alert" id="al-alert"></div>
+      <div class="form-group">
+        <label>Admin Password</label>
+        <input type="password" id="al-pass" placeholder="••••••••••" onkeydown="if(event.key==='Enter') loginAdmin()"/>
+      </div>
+      <div class="modal-actions">
+        <button class="mbtn mbtn-cancel" onclick="closeModal('admin-login-modal')">Cancel</button>
+        <button class="mbtn mbtn-blue" onclick="loginAdmin()">Log In →</button>
+      </div>
     </div>
   </div>
 </div>
 
 
-<!-- ADMIN PANEL MODAL -->
+<!-- ══ ADMIN PANEL MODAL ══ -->
 <div class="modal-overlay" id="admin-panel-modal">
   <div class="modal" style="max-width:540px;">
-    <h3>Admin Panel</h3>
-    <p class="sub">Manage volunteers who can access the hub. Changes are saved in your browser and persist across sessions.</p>
-    <div class="alert" id="ap-alert"></div>
-
-    <!-- Volunteer list -->
-    <div style="margin-bottom:18px;">
-      <div style="font-size:12px; font-weight:500; color:#555; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:8px;">Current Volunteers (<span id="vol-count">0</span>/20)</div>
-      <div id="vol-list" style="display:grid; gap:6px; max-height:220px; overflow-y:auto;"></div>
+    <div class="modal-accent blue"></div>
+    <div class="modal-header">
+      <h3>Volunteer Management</h3>
+      <p class="sub">Track volunteers. To give Drive access, open the Drive folder → Share → add their Gmail as Editor.</p>
     </div>
+    <div class="modal-divider"></div>
+    <div class="modal-body">
+      <div class="alert" id="ap-alert"></div>
 
-    <!-- Add volunteer -->
-    <div style="border-top:1px solid #e8e6e0; padding-top:16px; margin-bottom:16px;">
-      <div style="font-size:12px; font-weight:500; color:#555; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:8px;">Add New Volunteer</div>
-      <div style="display:flex; gap:8px;">
-        <input type="text" id="new-vol-name" placeholder="Volunteer name" style="flex:1; padding:8px 12px; font-size:13px; border:1px solid #d0cfc8; border-radius:8px; outline:none; font-family:inherit;" />
-        <button class="btn btn-primary" onclick="addVolunteer()" style="white-space:nowrap;">+ Add</button>
+      <div style="margin-bottom:20px;">
+        <div style="font-size:11px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Volunteers (<span id="vol-count">0</span>/20)</div>
+        <div id="vol-list" style="display:grid;gap:7px;max-height:190px;overflow-y:auto;"></div>
       </div>
-    </div>
 
-    <!-- Change volunteer password -->
-    <div style="border-top:1px solid #e8e6e0; padding-top:16px; margin-bottom:16px;">
-      <div style="font-size:12px; font-weight:500; color:#555; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:8px;">Volunteer Password</div>
-      <div style="display:flex; gap:8px;">
-        <input type="text" id="new-vol-pass" placeholder="New password for volunteers" style="flex:1; padding:8px 12px; font-size:13px; border:1px solid #d0cfc8; border-radius:8px; outline:none; font-family:inherit;" />
-        <button class="btn btn-primary" onclick="changeVolPass()" style="white-space:nowrap;">Update</button>
+      <div style="border-top:1px solid var(--border);padding-top:18px;margin-bottom:18px;">
+        <div style="font-size:11px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Add Volunteer</div>
+        <div style="display:grid;gap:8px;">
+          <input type="text" id="new-vol-name" placeholder="Name — 126002036" style="padding:9px 13px;font-size:13px;border:1.5px solid var(--border);border-radius:9px;outline:none;font-family:'DM Sans',sans-serif;background:var(--cream);"/>
+          <input type="email" id="new-vol-email" placeholder="126002036@sastra.ac.in (Gmail for Drive)" style="padding:9px 13px;font-size:13px;border:1.5px solid var(--border);border-radius:9px;outline:none;font-family:'DM Sans',sans-serif;background:var(--cream);"/>
+          <button class="mbtn mbtn-primary" onclick="addVolunteer()">+ Add to List</button>
+        </div>
       </div>
-      <div style="font-size:12px; color:#888; margin-top:6px;">Current password: <span id="current-vol-pass" style="font-family:monospace; background:#f0efe8; padding:2px 6px; border-radius:4px;"></span></div>
-    </div>
 
-    <div style="border-top:1px solid #e8e6e0; padding-top:14px; background:#FAEEDA; border-radius:8px; padding:12px 14px; font-size:12px; color:#633806; line-height:1.6;">
-      <strong>Note:</strong> Volunteer names and password are saved in your browser's local storage. If you use a different browser or device, you'll need to re-add them. Share the volunteer password with your team via WhatsApp or email.
-    </div>
+      <div style="border-top:1px solid var(--border);padding-top:18px;margin-bottom:18px;">
+        <div style="font-size:11px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Volunteer Password</div>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="new-vol-pass" placeholder="New password" style="flex:1;padding:9px 13px;font-size:13px;border:1.5px solid var(--border);border-radius:9px;outline:none;font-family:'DM Sans',sans-serif;background:var(--cream);"/>
+          <button class="mbtn mbtn-blue" onclick="changeVolPass()" style="white-space:nowrap;">Update</button>
+        </div>
+        <div style="font-size:12px;color:var(--ink-muted);margin-top:7px;">Current: <span id="current-vol-pass" style="font-family:monospace;background:#eeeae0;padding:2px 8px;border-radius:5px;color:var(--ink);"></span></div>
+      </div>
 
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('admin-panel-modal')">Close</button>
+      <div style="background:var(--blue-lt);border-radius:9px;padding:12px 14px;font-size:12px;color:var(--blue);line-height:1.6;">
+        <strong>To give Drive editor access:</strong> Drive folder → Share → paste Gmail → set to Editor → Done.
+      </div>
+      <div class="modal-actions"><button class="mbtn mbtn-cancel" onclick="closeModal('admin-panel-modal')">Close</button></div>
     </div>
   </div>
 </div>
 
+
 <script>
-// ─────────────────────────────────────────────
-// CONFIG
-// ─────────────────────────────────────────────
 const CONFIG = {
-  drive_api_key:    "AIzaSyA3BYksRiTf-vvKq6VZvJBEzOmy9THQFL4",
-  drive_folder_id:  "1kzvOdMhi1H2JI3bWk-xunTGS0IwfKvt6",
+  drive_api_key:   "AIzaSyA3BYksRiTf-vvKq6VZvJBEzOmy9THQFL4",
+  drive_folder_id: "1kzvOdMhi1H2JI3bWk-xunTGS0IwfKvt6",
   emailjs_public_key:  "KzGrshdr2vPTGJQkw",
   emailjs_service_id:  "service_32i6rhm",
   emailjs_template_id: "template_crhgh5r",
-  admin_email:         "pooranitholkappian357@gmail.com",
-  admin_password:      "sastra@admin2026",   // CHANGE THIS — only you know this
-  volunteer_password_default: "sastra@che2026",
-  volunteers_default: ["Poorni", "Janani", "Kaviya"],
+  admin_email:    "pooranitholkappian357@gmail.com",
+  admin_password: "sastra@admin2026",
   categories: [
-    { key: "notes", label: "Lecture Notes",  driveFolder: "Lecture Notes",  icon: "📄" },
-    { key: "refs",  label: "Reference PDFs", driveFolder: "Reference PDFs", icon: "📚" },
-    { key: "past",  label: "Past Papers",    driveFolder: "Past Papers",    icon: "📝" },
-    { key: "lab",   label: "Lab Manuals",    driveFolder: "Lab Manuals",    icon: "🔬" },
-    { key: "other", label: "Other",          driveFolder: "Other",          icon: "📁" }
+    { key:"notes", label:"Lecture Notes",  driveFolder:"Lecture Notes",  icon:"📄" },
+    { key:"refs",  label:"Reference PDFs", driveFolder:"Reference PDFs", icon:"📚" },
+    { key:"past",  label:"Past Papers",    driveFolder:"Past Papers",    icon:"📝" },
+    { key:"lab",   label:"Lab Manuals",    driveFolder:"Lab Manuals",    icon:"🔬" },
+    { key:"other", label:"Other",          driveFolder:"Other",          icon:"📁" }
   ]
 };
 
-// ─────────────────────────────────────────────
-// STATE
-// ─────────────────────────────────────────────
-let allFiles      = [];
-let currentFilter = "all";
-let currentSearch = "";
-let isVolunteer   = false;
-let isAdmin       = false;
-let volName       = "";
+let allFiles=[], currentFilter="all", currentSearch="", isAdmin=false;
 
-// Load saved volunteer data from localStorage (admin-managed)
-function getVolunteers()    { const s=localStorage.getItem("sastra_volunteers"); return s ? JSON.parse(s) : CONFIG.volunteers_default; }
-function getVolPass()       { return localStorage.getItem("sastra_vol_pass") || CONFIG.volunteer_password_default; }
-function saveVolunteers(v)  { localStorage.setItem("sastra_volunteers", JSON.stringify(v)); }
-function saveVolPass(p)     { localStorage.setItem("sastra_vol_pass", p); }
+function getVolunteers()   { const s=localStorage.getItem("che_vols"); return s?JSON.parse(s):[]; }
+function getVolPass()      { return localStorage.getItem("che_vpass")||"sastra@che2026"; }
+function saveVolunteers(v) { localStorage.setItem("che_vols",JSON.stringify(v)); }
+function saveVolPass(p)    { localStorage.setItem("che_vpass",p); }
 
-// ─────────────────────────────────────────────
-// INIT
-// ─────────────────────────────────────────────
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded",()=>{
   emailjs.init(CONFIG.emailjs_public_key);
-  updateVolStat();
+  document.getElementById("stat-vols").textContent = getVolunteers().length||"0";
   loadAllFiles();
 });
 
-function updateVolStat() {
-  document.getElementById("stat-vols") && (document.getElementById("stat-vols").textContent = getVolunteers().length);
-}
-
-// ─────────────────────────────────────────────
-// LOAD FILES FROM GOOGLE DRIVE
-// ─────────────────────────────────────────────
 async function loadAllFiles() {
-  document.getElementById("loading-skeletons").style.display = "block";
-  document.getElementById("file-sections").innerHTML = "";
-  document.getElementById("results-label").textContent = "Loading from Google Drive…";
+  document.getElementById("loading-skeletons").style.display="block";
+  document.getElementById("file-sections").innerHTML="";
+  document.getElementById("results-label").textContent="Loading from Google Drive…";
   hideError();
   try {
-    const subfolders = await getSubfolders(CONFIG.drive_folder_id);
-    allFiles = [];
+    const subs = await getDriveFolders(CONFIG.drive_folder_id);
+    allFiles=[];
     for (const cat of CONFIG.categories) {
-      const folder = subfolders.find(f => f.name.trim().toLowerCase() === cat.driveFolder.trim().toLowerCase());
-      if (folder) {
-        const files = await getFilesInFolder(folder.id);
-        files.forEach(f => {
-          allFiles.push({ id:f.id, name:f.name, key:cat.key, label:cat.label, icon:cat.icon,
-            link:`https://drive.google.com/file/d/${f.id}/view`,
-            modifiedTime:f.modifiedTime, mimeType:f.mimeType,
-            size:f.size ? formatBytes(parseInt(f.size)) : null });
-        });
+      const folder = subs.find(f=>f.name.trim().toLowerCase()===cat.driveFolder.trim().toLowerCase());
+      if (!folder) continue;
+      const direct = await getDriveFiles(folder.id);
+      direct.forEach(f=>allFiles.push(mkFile(f,cat,null)));
+      const innerFolders = await getDriveFolders(folder.id);
+      for (const inner of innerFolders) {
+        const innerFiles = await getDriveFiles(inner.id);
+        innerFiles.forEach(f=>allFiles.push(mkFile(f,cat,inner.name)));
       }
     }
-    allFiles.sort((a,b) => new Date(b.modifiedTime)-new Date(a.modifiedTime));
-    document.getElementById("loading-skeletons").style.display = "none";
-    document.getElementById("stat-total").textContent = allFiles.length;
-    document.getElementById("stat-updated").textContent = allFiles.length ? fmtDate(allFiles[0].modifiedTime) : "—";
+    allFiles.sort((a,b)=>new Date(b.modifiedTime)-new Date(a.modifiedTime));
+    document.getElementById("loading-skeletons").style.display="none";
+    document.getElementById("stat-total").textContent=allFiles.length;
+    document.getElementById("stat-updated").textContent=allFiles.length?fmtDate(allFiles[0].modifiedTime):"—";
     renderFiles();
   } catch(err) {
-    document.getElementById("loading-skeletons").style.display = "none";
-    showError("Could not load files from Google Drive. Make sure the folder is shared publicly (Anyone with the link). Error: " + err.message);
-    document.getElementById("results-label").textContent = "Failed to load.";
-    console.error(err);
+    document.getElementById("loading-skeletons").style.display="none";
+    showError("Could not load files. Make sure the Drive folder is shared publicly. Error: "+err.message);
+    document.getElementById("results-label").textContent="Failed to load.";
   }
 }
 
-async function getSubfolders(parentId) {
-  const q = encodeURIComponent(`'${parentId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`);
-  const url = `https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)&key=${CONFIG.drive_api_key}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Drive API error ${res.status}: ${await res.text()}`);
-  const data = await res.json();
-  return data.files || [];
+function mkFile(f,cat,subfolder){
+  return { id:f.id, name:f.name, key:cat.key, label:cat.label, icon:cat.icon,
+    subfolder:subfolder||null, link:`https://drive.google.com/file/d/${f.id}/view`,
+    modifiedTime:f.modifiedTime, size:f.size?formatBytes(parseInt(f.size)):null };
+}
+async function getDriveFolders(pid){
+  const q=encodeURIComponent(`'${pid}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`);
+  const r=await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)&key=${CONFIG.drive_api_key}`);
+  if(!r.ok) throw new Error(`${r.status}: ${await r.text()}`);
+  return (await r.json()).files||[];
+}
+async function getDriveFiles(fid){
+  const q=encodeURIComponent(`'${fid}' in parents and mimeType!='application/vnd.google-apps.folder' and trashed=false`);
+  const fields=encodeURIComponent("files(id,name,modifiedTime,size)");
+  const r=await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=${fields}&orderBy=name&key=${CONFIG.drive_api_key}`);
+  if(!r.ok) throw new Error(`${r.status}`);
+  return (await r.json()).files||[];
 }
 
-async function getFilesInFolder(folderId) {
-  const q = encodeURIComponent(`'${folderId}' in parents and mimeType!='application/vnd.google-apps.folder' and trashed=false`);
-  const fields = encodeURIComponent("files(id,name,modifiedTime,mimeType,size)");
-  const url = `https://www.googleapis.com/drive/v3/files?q=${q}&fields=${fields}&orderBy=modifiedTime desc&key=${CONFIG.drive_api_key}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Drive API error ${res.status}`);
-  const data = await res.json();
-  return data.files || [];
-}
-
-// ─────────────────────────────────────────────
-// RENDER
-// ─────────────────────────────────────────────
-function getFiltered() {
-  return allFiles.filter(f => {
-    const okCat    = currentFilter === "all" || f.key === currentFilter;
-    const okSearch = !currentSearch ||
-      f.name.toLowerCase().includes(currentSearch.toLowerCase()) ||
-      f.label.toLowerCase().includes(currentSearch.toLowerCase());
-    return okCat && okSearch;
+function getFiltered(){
+  return allFiles.filter(f=>{
+    const okCat=currentFilter==="all"||f.key===currentFilter;
+    const okSearch=!currentSearch||f.name.toLowerCase().includes(currentSearch.toLowerCase())||(f.subfolder||"").toLowerCase().includes(currentSearch.toLowerCase());
+    return okCat&&okSearch;
   });
 }
 
-function renderFiles() {
-  const container = document.getElementById("file-sections");
-  const label     = document.getElementById("results-label");
-  const filtered  = getFiltered();
-  label.textContent = filtered.length ? `${filtered.length} material${filtered.length===1?"":"s"}` : "No materials found.";
-  if (!filtered.length) { container.innerHTML = `<div class="empty"><div class="empty-icon">📂</div><p>Nothing matches your filter or search.</p></div>`; return; }
-  if (currentFilter === "all" && !currentSearch) {
-    let html = "";
-    for (const cat of CONFIG.categories) {
-      const catFiles = filtered.filter(f => f.key === cat.key);
-      if (!catFiles.length) continue;
-      html += `<div class="section-title">${cat.icon} ${cat.label} <span class="section-count">${catFiles.length}</span></div>`;
-      html += `<div class="file-list">${catFiles.map(fileCardHTML).join("")}</div>`;
+function renderFiles(){
+  const container=document.getElementById("file-sections");
+  const label=document.getElementById("results-label");
+  const filtered=getFiltered();
+  label.textContent=filtered.length?`${filtered.length} material${filtered.length===1?"":"s"}`:"No materials found.";
+  if(!filtered.length){container.innerHTML=`<div class="empty"><div class="empty-icon">📂</div><p>Nothing matches your search or filter.</p></div>`;return;}
+  if(currentFilter==="all"&&!currentSearch){
+    let html="";
+    for(const cat of CONFIG.categories){
+      const catFiles=filtered.filter(f=>f.key===cat.key);
+      if(!catFiles.length) continue;
+      html+=`<div class="section-title"><div class="section-icon ${cat.key}">${cat.icon}</div><div class="section-text"><span class="section-name">${cat.label}</span><span class="section-count">${catFiles.length}</span></div><div class="section-line"></div></div>`;
+      const direct=catFiles.filter(f=>!f.subfolder);
+      const sfNames=[...new Set(catFiles.filter(f=>f.subfolder).map(f=>f.subfolder))];
+      if(direct.length) html+=`<div class="file-list">${direct.map(fileCardHTML).join("")}</div>`;
+      for(const sf of sfNames){
+        html+=`<div class="subfolder-label">${escHtml(sf)}</div>`;
+        html+=`<div class="file-list">${catFiles.filter(f=>f.subfolder===sf).map(fileCardHTML).join("")}</div>`;
+      }
     }
-    container.innerHTML = html;
+    container.innerHTML=html;
   } else {
-    container.innerHTML = `<div class="file-list">${filtered.map(fileCardHTML).join("")}</div>`;
+    container.innerHTML=`<div class="file-list">${filtered.map(fileCardHTML).join("")}</div>`;
   }
 }
 
-function fileCardHTML(f) {
-  const ext = f.name.split('.').pop().toUpperCase();
-  const extBadge = ['PDF','DOCX','PPTX','XLSX','ZIP'].includes(ext) ? ext : 'FILE';
+function fileCardHTML(f){
+  const ext=f.name.split('.').pop().toUpperCase();
+  const extBadge=['PDF','DOCX','PPTX','XLSX','ZIP'].includes(ext)?ext:'FILE';
   return `<a class="file-card" href="${escAttr(f.link)}" target="_blank" rel="noopener">
-    <div class="file-icon ${f.key}">${f.icon}</div>
+    <div class="file-thumb ${f.key}">${f.icon}</div>
     <div class="file-info">
       <div class="file-name">${escHtml(f.name)}</div>
-      <div class="file-meta">${extBadge}${f.size?' · '+f.size:''} · ${fmtDate(f.modifiedTime)}</div>
+      <div class="file-meta">
+        <span class="ext-badge">${extBadge}</span>
+        ${f.size?`<span class="meta-dot">·</span><span>${f.size}</span>`:''}
+        <span class="meta-dot">·</span><span>${fmtDate(f.modifiedTime)}</span>
+        ${f.subfolder?`<span class="meta-dot">·</span><span style="color:var(--teal)">${escHtml(f.subfolder)}</span>`:''}
+      </div>
     </div>
     <span class="cat-pill ${f.key}">${f.label}</span>
   </a>`;
 }
 
-// ─────────────────────────────────────────────
-// SEARCH & FILTER
-// ─────────────────────────────────────────────
-function searchFiles(val) { currentSearch = val; renderFiles(); }
-function filterCat(btn) {
-  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-  currentFilter = btn.dataset.cat;
-  renderFiles();
+function searchFiles(val){currentSearch=val;renderFiles();}
+function filterCat(btn){
+  document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");currentFilter=btn.dataset.cat;renderFiles();
 }
 
-// ─────────────────────────────────────────────
-// CONTRIBUTE
-// ─────────────────────────────────────────────
-function openContributeModal() { clearAlert("c-alert"); openModal("contribute-modal"); }
-async function submitContribution() {
-  const name  = document.getElementById("c-name").value.trim();
-  const title = document.getElementById("c-title").value.trim();
-  const cat   = document.getElementById("c-cat").value;
-  const link  = document.getElementById("c-link").value.trim();
-  const desc  = document.getElementById("c-desc").value.trim();
-  if (!name||!title||!cat||!link) { showAlert("c-alert","error","Please fill all required fields."); return; }
-  if (!link.startsWith("https://drive.google.com")) { showAlert("c-alert","error","Please paste a valid Google Drive link."); return; }
-  const btn = document.getElementById("c-submit-btn");
-  btn.disabled=true; btn.innerHTML=`<span class="spinner"></span>Sending…`;
-  try {
-    await emailjs.send(CONFIG.emailjs_service_id, CONFIG.emailjs_template_id, {
-      to_email:CONFIG.admin_email, from_name:name, file_title:title,
-      category:cat, drive_link:link, description:desc||"None.", sent_at:new Date().toLocaleString("en-IN")
+function openContributeModal(){clearAlert("c-alert");openModal("contribute-modal");}
+async function submitContribution(){
+  const name=document.getElementById("c-name").value.trim();
+  const email=document.getElementById("c-email").value.trim();
+  const title=document.getElementById("c-title").value.trim();
+  const cat=document.getElementById("c-cat").value;
+  const link=document.getElementById("c-link").value.trim();
+  const desc=document.getElementById("c-desc").value.trim();
+  if(!name||!email||!title||!cat||!link){showAlert("c-alert","error","Please fill all required fields.");return;}
+  if(!link.startsWith("https://drive.google.com")){showAlert("c-alert","error","Please paste a valid Google Drive link.");return;}
+  const btn=document.getElementById("c-submit-btn");
+  btn.disabled=true;btn.innerHTML=`<span class="spinner"></span>Sending…`;
+  try{
+    await emailjs.send(CONFIG.emailjs_service_id,CONFIG.emailjs_template_id,{
+      to_email:CONFIG.admin_email,from_name:name,from_email:email,
+      file_title:title,category:cat,drive_link:link,description:desc||"None.",
+      sent_at:new Date().toLocaleString("en-IN"),type:"Material Contribution"
     });
-    showAlert("c-alert","success","✅ Sent! The admin will review and add it to the Drive folder. Thank you, "+name.split("—")[0].trim()+"!");
-    ["c-name","c-title","c-link","c-desc"].forEach(id=>document.getElementById(id).value="");
+    showAlert("c-alert","success","✅ Sent! The admin will review and add it to Drive. Thank you!");
+    ["c-name","c-email","c-title","c-link","c-desc"].forEach(id=>document.getElementById(id).value="");
     document.getElementById("c-cat").value="";
-  } catch(err) { showAlert("c-alert","error","Could not send. Check your internet connection."); console.error(err); }
-  btn.disabled=false; btn.innerHTML="Send to Admin";
+  }catch(err){showAlert("c-alert","error","Could not send. Check your connection.");console.error(err);}
+  btn.disabled=false;btn.innerHTML="Send to Admin →";
 }
 
-// ─────────────────────────────────────────────
-// VOLUNTEER LOGIN / LOGOUT
-// ─────────────────────────────────────────────
-function openLoginModal() { clearAlert("l-alert"); openModal("login-modal"); }
-function loginVolunteer() {
-  const pass = document.getElementById("l-pass").value;
-  const name = document.getElementById("l-name").value.trim();
-  if (!name) { showAlert("l-alert","error","Enter your name."); return; }
-  if (pass !== getVolPass()) { showAlert("l-alert","error","Incorrect password. Ask your administrator."); return; }
-  isVolunteer=true; volName=name;
-  closeModal("login-modal");
-  document.getElementById("role-badge").textContent="Volunteer";
-  document.getElementById("role-badge").classList.add("contributor");
-  document.getElementById("vol-banner").style.display="flex";
-  document.getElementById("vol-name-display").textContent=name;
-  document.getElementById("vol-login-btn").style.display="none";
-  document.getElementById("admin-login-btn").style.display="none";
-  setTimeout(()=>openModal("vol-help-modal"),300);
-}
-function logoutVolunteer() {
-  isVolunteer=false; volName="";
-  document.getElementById("role-badge").textContent="Student";
-  document.getElementById("role-badge").classList.remove("contributor");
-  document.getElementById("vol-banner").style.display="none";
-  document.getElementById("vol-login-btn").style.display="";
-  document.getElementById("admin-login-btn").style.display="";
+function openVolunteerModal(){clearAlert("v-alert");openModal("volunteer-modal");}
+async function submitVolunteerRequest(){
+  const name=document.getElementById("v-name").value.trim();
+  const email=document.getElementById("v-email").value.trim();
+  const roll=document.getElementById("v-roll").value.trim();
+  const dept=document.getElementById("v-dept").value.trim();
+  const reason=document.getElementById("v-reason").value.trim();
+  if(!name||!email||!roll||!dept){showAlert("v-alert","error","Please fill all required fields.");return;}
+  const btn=document.getElementById("v-submit-btn");
+  btn.disabled=true;btn.innerHTML=`<span class="spinner"></span>Sending…`;
+  try{
+    await emailjs.send(CONFIG.emailjs_service_id,CONFIG.emailjs_template_id,{
+      to_email:CONFIG.admin_email,from_name:name,from_email:email,
+      file_title:`Volunteer Request — ${name}`,
+      category:`Roll: ${roll} | ${dept}`,
+      drive_link:`Gmail for Drive: ${email}`,
+      description:reason||"No reason provided.",
+      sent_at:new Date().toLocaleString("en-IN"),type:"Volunteer Request"
+    });
+    showAlert("v-alert","success",`✅ Request sent! The admin will add ${email} as a Drive editor. You'll get a Google notification once added.`);
+    ["v-name","v-email","v-roll","v-dept","v-reason"].forEach(id=>document.getElementById(id).value="");
+  }catch(err){showAlert("v-alert","error","Could not send. Check your connection.");console.error(err);}
+  btn.disabled=false;btn.innerHTML="Send Request →";
 }
 
-// ─────────────────────────────────────────────
-// ADMIN LOGIN / LOGOUT
-// ─────────────────────────────────────────────
-function openAdminLoginModal() { clearAlert("al-alert"); document.getElementById("al-pass").value=""; openModal("admin-login-modal"); }
-function loginAdmin() {
-  const pass = document.getElementById("al-pass").value;
-  if (pass !== CONFIG.admin_password) { showAlert("al-alert","error","Incorrect admin password."); return; }
-  isAdmin = true;
-  closeModal("admin-login-modal");
-  document.getElementById("role-badge").textContent="Admin";
-  document.getElementById("role-badge").style.background="#E6F1FB";
-  document.getElementById("role-badge").style.color="#185FA5";
-  document.getElementById("role-badge").style.borderColor="#B5D4F4";
+function openAdminLoginModal(){clearAlert("al-alert");document.getElementById("al-pass").value="";openModal("admin-login-modal");}
+function loginAdmin(){
+  if(document.getElementById("al-pass").value!==CONFIG.admin_password){showAlert("al-alert","error","Incorrect password.");return;}
+  isAdmin=true;closeModal("admin-login-modal");
   document.getElementById("admin-banner").style.display="flex";
   document.getElementById("admin-login-btn").style.display="none";
-  document.getElementById("vol-login-btn").style.display="none";
 }
-function logoutAdmin() {
+function logoutAdmin(){
   isAdmin=false;
-  document.getElementById("role-badge").textContent="Student";
-  document.getElementById("role-badge").style.background="";
-  document.getElementById("role-badge").style.color="";
-  document.getElementById("role-badge").style.borderColor="";
   document.getElementById("admin-banner").style.display="none";
   document.getElementById("admin-login-btn").style.display="";
-  document.getElementById("vol-login-btn").style.display="";
 }
 
-// ─────────────────────────────────────────────
-// ADMIN PANEL — VOLUNTEER MANAGEMENT
-// ─────────────────────────────────────────────
-function openAdminPanel() {
+function openAdminPanel(){
   renderVolList();
-  document.getElementById("current-vol-pass").textContent = getVolPass();
-  document.getElementById("new-vol-pass").value = "";
-  document.getElementById("new-vol-name").value = "";
+  document.getElementById("current-vol-pass").textContent=getVolPass();
+  document.getElementById("new-vol-pass").value="";
+  document.getElementById("new-vol-name").value="";
+  document.getElementById("new-vol-email").value="";
   clearAlert("ap-alert");
   openModal("admin-panel-modal");
 }
-
-function renderVolList() {
-  const vols = getVolunteers();
-  document.getElementById("vol-count").textContent = vols.length;
-  if (!vols.length) {
-    document.getElementById("vol-list").innerHTML = `<div style="font-size:13px; color:#888; padding:8px 0;">No volunteers added yet.</div>`;
-    return;
-  }
-  document.getElementById("vol-list").innerHTML = vols.map((v,i) => `
-    <div style="display:flex; align-items:center; justify-content:space-between; background:#f5f4f0; border-radius:8px; padding:9px 12px;">
-      <div style="display:flex; align-items:center; gap:10px;">
-        <div style="width:28px; height:28px; border-radius:50%; background:#E1F5EE; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; color:#0F6E56;">${escHtml(v.charAt(0).toUpperCase())}</div>
-        <span style="font-size:13px; font-weight:500;">${escHtml(v)}</span>
+function renderVolList(){
+  const vols=getVolunteers();
+  document.getElementById("vol-count").textContent=vols.length;
+  document.getElementById("stat-vols").textContent=vols.length||"0";
+  if(!vols.length){document.getElementById("vol-list").innerHTML=`<div style="font-size:13px;color:var(--ink-muted);padding:8px 0;">No volunteers added yet.</div>`;return;}
+  document.getElementById("vol-list").innerHTML=vols.map((v,i)=>`
+    <div class="vol-row">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="vol-avatar">${escHtml(v.name.charAt(0).toUpperCase())}</div>
+        <div><div style="font-size:13px;font-weight:500;">${escHtml(v.name)}</div><div style="font-size:11px;color:var(--ink-muted);">${escHtml(v.email)}</div></div>
       </div>
-      <button onclick="removeVolunteer(${i})" style="font-size:11px; padding:4px 10px; border-radius:6px; border:1px solid #993C1D; background:white; color:#993C1D; cursor:pointer;">Remove</button>
+      <button class="mbtn mbtn-danger" style="font-size:11px;padding:4px 10px;" onclick="removeVolunteer(${i})">Remove</button>
     </div>`).join("");
 }
-
-function addVolunteer() {
-  const name = document.getElementById("new-vol-name").value.trim();
-  if (!name) { showAlert("ap-alert","error","Enter a name."); return; }
-  const vols = getVolunteers();
-  if (vols.length >= 20) { showAlert("ap-alert","error","Maximum 20 volunteers allowed."); return; }
-  if (vols.map(v=>v.toLowerCase()).includes(name.toLowerCase())) { showAlert("ap-alert","error","This volunteer is already in the list."); return; }
-  vols.push(name);
-  saveVolunteers(vols);
-  document.getElementById("new-vol-name").value = "";
-  renderVolList();
-  updateVolStat();
-  showAlert("ap-alert","success",`✅ ${name} added as a volunteer. Share the password with them.`);
+function addVolunteer(){
+  const name=document.getElementById("new-vol-name").value.trim();
+  const email=document.getElementById("new-vol-email").value.trim();
+  if(!name||!email){showAlert("ap-alert","error","Enter both name and email.");return;}
+  const vols=getVolunteers();
+  if(vols.length>=20){showAlert("ap-alert","error","Max 20 volunteers.");return;}
+  if(vols.find(v=>v.email.toLowerCase()===email.toLowerCase())){showAlert("ap-alert","error","Email already in the list.");return;}
+  vols.push({name,email});saveVolunteers(vols);
+  document.getElementById("new-vol-name").value="";document.getElementById("new-vol-email").value="";
+  renderVolList();showAlert("ap-alert","success",`✅ ${name} added. Now share Drive folder with ${email} as Editor.`);
+}
+function removeVolunteer(i){
+  const vols=getVolunteers();const nm=vols[i].name;vols.splice(i,1);saveVolunteers(vols);renderVolList();
+  showAlert("ap-alert","success",`${nm} removed.`);
+}
+function changeVolPass(){
+  const p=document.getElementById("new-vol-pass").value.trim();
+  if(!p||p.length<6){showAlert("ap-alert","error","Minimum 6 characters.");return;}
+  saveVolPass(p);document.getElementById("current-vol-pass").textContent=p;
+  document.getElementById("new-vol-pass").value="";
+  showAlert("ap-alert","success","✅ Password updated!");
 }
 
-function removeVolunteer(idx) {
-  const vols = getVolunteers();
-  const name = vols[idx];
-  vols.splice(idx,1);
-  saveVolunteers(vols);
-  renderVolList();
-  updateVolStat();
-  showAlert("ap-alert","success",`${name} removed from volunteers.`);
+function openModal(id){document.getElementById(id).classList.add("open");}
+function closeModal(id){document.getElementById(id).classList.remove("open");}
+function clearAlert(id){const el=document.getElementById(id);if(el){el.style.display="none";el.textContent="";}}
+function showAlert(id,type,msg){
+  const el=document.getElementById(id);if(!el)return;
+  el.className=`alert ${type}`;el.textContent=msg;el.style.display="block";
+  if(type==="success")setTimeout(()=>el.style.display="none",8000);
 }
-
-function changeVolPass() {
-  const newPass = document.getElementById("new-vol-pass").value.trim();
-  if (!newPass || newPass.length < 6) { showAlert("ap-alert","error","Password must be at least 6 characters."); return; }
-  saveVolPass(newPass);
-  document.getElementById("current-vol-pass").textContent = newPass;
-  document.getElementById("new-vol-pass").value = "";
-  showAlert("ap-alert","success","✅ Volunteer password updated! Share the new password with your team.");
-}
-
-// ─────────────────────────────────────────────
-// UTILITIES
-// ─────────────────────────────────────────────
-function openModal(id)  { document.getElementById(id).classList.add("open"); }
-function closeModal(id) { document.getElementById(id).classList.remove("open"); }
-function clearAlert(id) { const el=document.getElementById(id); if(el){el.style.display="none"; el.textContent="";} }
-function showAlert(id,type,msg) {
-  const el=document.getElementById(id); if(!el) return;
-  el.className=`alert ${type}`; el.textContent=msg; el.style.display="block";
-  if(type==="success") setTimeout(()=>el.style.display="none",7000);
-}
-function showError(msg) { const el=document.getElementById("error-banner"); el.textContent=msg; el.style.display="block"; }
-function hideError()    { document.getElementById("error-banner").style.display="none"; }
-
-function fmtDate(d) {
-  if (!d) return "—";
-  const diff = Math.floor((Date.now()-new Date(d))/86400000);
-  if (diff===0) return "Today"; if (diff===1) return "Yesterday";
-  if (diff<7) return `${diff} days ago`;
-  if (diff<30) return `${Math.floor(diff/7)} week${Math.floor(diff/7)>1?"s":""} ago`;
+function showError(msg){document.getElementById("error-banner").textContent=msg;document.getElementById("error-banner").style.display="block";}
+function hideError(){document.getElementById("error-banner").style.display="none";}
+function fmtDate(d){
+  if(!d)return"—";
+  const diff=Math.floor((Date.now()-new Date(d))/86400000);
+  if(diff===0)return"Today";if(diff===1)return"Yesterday";
+  if(diff<7)return`${diff}d ago`;if(diff<30)return`${Math.floor(diff/7)}w ago`;
   return new Date(d).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"});
 }
-function formatBytes(bytes) {
-  if (!bytes) return null;
-  if (bytes<1024) return bytes+" B";
-  if (bytes<1048576) return (bytes/1024).toFixed(1)+" KB";
-  return (bytes/1048576).toFixed(1)+" MB";
-}
-function escHtml(s)  { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-function escAttr(s)  { return String(s).replace(/"/g,"&quot;"); }
-
-document.querySelectorAll(".modal-overlay").forEach(o => o.addEventListener("click", e => { if(e.target===o) o.classList.remove("open"); }));
+function formatBytes(b){if(!b)return null;if(b<1024)return b+" B";if(b<1048576)return(b/1024).toFixed(1)+" KB";return(b/1048576).toFixed(1)+" MB";}
+function escHtml(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function escAttr(s){return String(s).replace(/"/g,"&quot;");}
+document.querySelectorAll(".modal-overlay").forEach(o=>o.addEventListener("click",e=>{if(e.target===o)o.classList.remove("open");}));
 </script>
 </body>
 </html>
-
