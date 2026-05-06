@@ -126,6 +126,7 @@
   </div>
   <div class="topbar-right">
     <span class="badge" id="role-badge">Student</span>
+    <button class="btn" id="admin-login-btn" onclick="openAdminLoginModal()" style="font-size:12px; padding:6px 12px; color:#888; border-color:#e0dfd8;">Admin</button>
     <button class="btn" id="vol-login-btn" onclick="openLoginModal()">Volunteer Login</button>
     <button class="btn btn-primary" onclick="openContributeModal()">+ Contribute</button>
   </div>
@@ -141,6 +142,15 @@
   <div class="vol-banner" id="vol-banner" style="display:none;">
     <div class="vol-banner-text">Logged in as <strong id="vol-name-display">Volunteer</strong> — Manage files directly from Google Drive.</div>
     <button class="btn btn-danger" onclick="logoutVolunteer()">Log out</button>
+  </div>
+
+  <!-- Admin banner -->
+  <div id="admin-banner" style="display:none; background:#E6F1FB; border:1px solid #B5D4F4; border-radius:10px; padding:14px 18px; display:none; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:20px;">
+    <div style="font-size:13px; color:#0C447C;">Logged in as <strong>Admin</strong> — You can manage volunteers and change the volunteer password.</div>
+    <div style="display:flex; gap:8px;">
+      <button class="btn" style="font-size:12px; padding:6px 12px; background:#185FA5; color:white; border-color:#185FA5;" onclick="openAdminPanel()">Manage Volunteers</button>
+      <button class="btn btn-danger" onclick="logoutAdmin()" style="font-size:12px; padding:6px 12px;">Log out</button>
+    </div>
   </div>
 
   <!-- Stats -->
@@ -274,26 +284,77 @@
 </div>
 
 
+<!-- ADMIN LOGIN MODAL -->
+<div class="modal-overlay" id="admin-login-modal">
+  <div class="modal">
+    <h3>Admin Login</h3>
+    <p class="sub">Admin access lets you add/remove volunteers and change the volunteer password.</p>
+    <div class="alert" id="al-alert"></div>
+    <div class="form-group"><label>Admin Password</label><input type="password" id="al-pass" placeholder="Admin password" onkeydown="if(event.key==='Enter') loginAdmin()" /></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('admin-login-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="loginAdmin()">Log In</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ADMIN PANEL MODAL -->
+<div class="modal-overlay" id="admin-panel-modal">
+  <div class="modal" style="max-width:540px;">
+    <h3>Admin Panel</h3>
+    <p class="sub">Manage volunteers who can access the hub. Changes are saved in your browser and persist across sessions.</p>
+    <div class="alert" id="ap-alert"></div>
+
+    <!-- Volunteer list -->
+    <div style="margin-bottom:18px;">
+      <div style="font-size:12px; font-weight:500; color:#555; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:8px;">Current Volunteers (<span id="vol-count">0</span>/20)</div>
+      <div id="vol-list" style="display:grid; gap:6px; max-height:220px; overflow-y:auto;"></div>
+    </div>
+
+    <!-- Add volunteer -->
+    <div style="border-top:1px solid #e8e6e0; padding-top:16px; margin-bottom:16px;">
+      <div style="font-size:12px; font-weight:500; color:#555; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:8px;">Add New Volunteer</div>
+      <div style="display:flex; gap:8px;">
+        <input type="text" id="new-vol-name" placeholder="Volunteer name" style="flex:1; padding:8px 12px; font-size:13px; border:1px solid #d0cfc8; border-radius:8px; outline:none; font-family:inherit;" />
+        <button class="btn btn-primary" onclick="addVolunteer()" style="white-space:nowrap;">+ Add</button>
+      </div>
+    </div>
+
+    <!-- Change volunteer password -->
+    <div style="border-top:1px solid #e8e6e0; padding-top:16px; margin-bottom:16px;">
+      <div style="font-size:12px; font-weight:500; color:#555; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:8px;">Volunteer Password</div>
+      <div style="display:flex; gap:8px;">
+        <input type="text" id="new-vol-pass" placeholder="New password for volunteers" style="flex:1; padding:8px 12px; font-size:13px; border:1px solid #d0cfc8; border-radius:8px; outline:none; font-family:inherit;" />
+        <button class="btn btn-primary" onclick="changeVolPass()" style="white-space:nowrap;">Update</button>
+      </div>
+      <div style="font-size:12px; color:#888; margin-top:6px;">Current password: <span id="current-vol-pass" style="font-family:monospace; background:#f0efe8; padding:2px 6px; border-radius:4px;"></span></div>
+    </div>
+
+    <div style="border-top:1px solid #e8e6e0; padding-top:14px; background:#FAEEDA; border-radius:8px; padding:12px 14px; font-size:12px; color:#633806; line-height:1.6;">
+      <strong>Note:</strong> Volunteer names and password are saved in your browser's local storage. If you use a different browser or device, you'll need to re-add them. Share the volunteer password with your team via WhatsApp or email.
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('admin-panel-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ─────────────────────────────────────────────
 // CONFIG
 // ─────────────────────────────────────────────
 const CONFIG = {
-  // Google Drive
-  drive_api_key:    "AIzaSyA64XvQon2Ev1rIPSsUrvo_wF9fkFhXs3g",
+  drive_api_key:    "AIzaSyA3BYksRiTf-vvKq6VZvJBEzOmy9THQFL4",
   drive_folder_id:  "1kzvOdMhi1H2JI3bWk-xunTGS0IwfKvt6",
-
-  // EmailJS
   emailjs_public_key:  "KzGrshdr2vPTGJQkw",
   emailjs_service_id:  "service_32i6rhm",
   emailjs_template_id: "template_crhgh5r",
   admin_email:         "pooranitholkappian357@gmail.com",
-
-  // Volunteer access
-  volunteer_password: "sastra@che2026",
-  volunteers: ["Poorni", "Janani", "Kaviya"],
-
-  // Category subfolders — names must exactly match your Drive folder names
+  admin_password:      "sastra@admin2026",   // CHANGE THIS — only you know this
+  volunteer_password_default: "sastra@che2026",
+  volunteers_default: ["Poorni", "Janani", "Kaviya"],
   categories: [
     { key: "notes", label: "Lecture Notes",  driveFolder: "Lecture Notes",  icon: "📄" },
     { key: "refs",  label: "Reference PDFs", driveFolder: "Reference PDFs", icon: "📚" },
@@ -306,19 +367,31 @@ const CONFIG = {
 // ─────────────────────────────────────────────
 // STATE
 // ─────────────────────────────────────────────
-let allFiles       = [];   // { name, key, label, icon, link, modifiedTime, mimeType }
-let currentFilter  = "all";
-let currentSearch  = "";
-let isVolunteer    = false;
-let volName        = "";
+let allFiles      = [];
+let currentFilter = "all";
+let currentSearch = "";
+let isVolunteer   = false;
+let isAdmin       = false;
+let volName       = "";
+
+// Load saved volunteer data from localStorage (admin-managed)
+function getVolunteers()    { const s=localStorage.getItem("sastra_volunteers"); return s ? JSON.parse(s) : CONFIG.volunteers_default; }
+function getVolPass()       { return localStorage.getItem("sastra_vol_pass") || CONFIG.volunteer_password_default; }
+function saveVolunteers(v)  { localStorage.setItem("sastra_volunteers", JSON.stringify(v)); }
+function saveVolPass(p)     { localStorage.setItem("sastra_vol_pass", p); }
 
 // ─────────────────────────────────────────────
 // INIT
 // ─────────────────────────────────────────────
 window.addEventListener("DOMContentLoaded", () => {
   emailjs.init(CONFIG.emailjs_public_key);
+  updateVolStat();
   loadAllFiles();
 });
+
+function updateVolStat() {
+  document.getElementById("stat-vols") && (document.getElementById("stat-vols").textContent = getVolunteers().length);
+}
 
 // ─────────────────────────────────────────────
 // LOAD FILES FROM GOOGLE DRIVE
@@ -328,42 +401,27 @@ async function loadAllFiles() {
   document.getElementById("file-sections").innerHTML = "";
   document.getElementById("results-label").textContent = "Loading from Google Drive…";
   hideError();
-
   try {
-    // Step 1: Get subfolder IDs under the parent folder
     const subfolders = await getSubfolders(CONFIG.drive_folder_id);
-
-    // Step 2: For each category, find matching subfolder and list files
     allFiles = [];
     for (const cat of CONFIG.categories) {
       const folder = subfolders.find(f => f.name.trim().toLowerCase() === cat.driveFolder.trim().toLowerCase());
       if (folder) {
         const files = await getFilesInFolder(folder.id);
         files.forEach(f => {
-          allFiles.push({
-            id:           f.id,
-            name:         f.name,
-            key:          cat.key,
-            label:        cat.label,
-            icon:         cat.icon,
-            link:         `https://drive.google.com/file/d/${f.id}/view`,
-            modifiedTime: f.modifiedTime,
-            mimeType:     f.mimeType,
-            size:         f.size ? formatBytes(parseInt(f.size)) : null
-          });
+          allFiles.push({ id:f.id, name:f.name, key:cat.key, label:cat.label, icon:cat.icon,
+            link:`https://drive.google.com/file/d/${f.id}/view`,
+            modifiedTime:f.modifiedTime, mimeType:f.mimeType,
+            size:f.size ? formatBytes(parseInt(f.size)) : null });
         });
       }
     }
-
-    // Sort by modified date descending
-    allFiles.sort((a, b) => new Date(b.modifiedTime) - new Date(a.modifiedTime));
-
+    allFiles.sort((a,b) => new Date(b.modifiedTime)-new Date(a.modifiedTime));
     document.getElementById("loading-skeletons").style.display = "none";
     document.getElementById("stat-total").textContent = allFiles.length;
     document.getElementById("stat-updated").textContent = allFiles.length ? fmtDate(allFiles[0].modifiedTime) : "—";
     renderFiles();
-
-  } catch (err) {
+  } catch(err) {
     document.getElementById("loading-skeletons").style.display = "none";
     showError("Could not load files from Google Drive. Make sure the folder is shared publicly (Anyone with the link). Error: " + err.message);
     document.getElementById("results-label").textContent = "Failed to load.";
@@ -407,17 +465,8 @@ function renderFiles() {
   const container = document.getElementById("file-sections");
   const label     = document.getElementById("results-label");
   const filtered  = getFiltered();
-
-  label.textContent = filtered.length
-    ? `${filtered.length} material${filtered.length === 1 ? "" : "s"}`
-    : "No materials found.";
-
-  if (!filtered.length) {
-    container.innerHTML = `<div class="empty"><div class="empty-icon">📂</div><p>Nothing matches your filter or search.</p></div>`;
-    return;
-  }
-
-  // If showing all, group by category with section headers
+  label.textContent = filtered.length ? `${filtered.length} material${filtered.length===1?"":"s"}` : "No materials found.";
+  if (!filtered.length) { container.innerHTML = `<div class="empty"><div class="empty-icon">📂</div><p>Nothing matches your filter or search.</p></div>`; return; }
   if (currentFilter === "all" && !currentSearch) {
     let html = "";
     for (const cat of CONFIG.categories) {
@@ -435,15 +484,14 @@ function renderFiles() {
 function fileCardHTML(f) {
   const ext = f.name.split('.').pop().toUpperCase();
   const extBadge = ['PDF','DOCX','PPTX','XLSX','ZIP'].includes(ext) ? ext : 'FILE';
-  return `
-    <a class="file-card" href="${escAttr(f.link)}" target="_blank" rel="noopener">
-      <div class="file-icon ${f.key}">${f.icon}</div>
-      <div class="file-info">
-        <div class="file-name">${escHtml(f.name)}</div>
-        <div class="file-meta">${extBadge}${f.size ? ' · ' + f.size : ''} · ${fmtDate(f.modifiedTime)}</div>
-      </div>
-      <span class="cat-pill ${f.key}">${f.label}</span>
-    </a>`;
+  return `<a class="file-card" href="${escAttr(f.link)}" target="_blank" rel="noopener">
+    <div class="file-icon ${f.key}">${f.icon}</div>
+    <div class="file-info">
+      <div class="file-name">${escHtml(f.name)}</div>
+      <div class="file-meta">${extBadge}${f.size?' · '+f.size:''} · ${fmtDate(f.modifiedTime)}</div>
+    </div>
+    <span class="cat-pill ${f.key}">${f.label}</span>
+  </a>`;
 }
 
 // ─────────────────────────────────────────────
@@ -458,39 +506,29 @@ function filterCat(btn) {
 }
 
 // ─────────────────────────────────────────────
-// CONTRIBUTE (any student)
+// CONTRIBUTE
 // ─────────────────────────────────────────────
 function openContributeModal() { clearAlert("c-alert"); openModal("contribute-modal"); }
-
 async function submitContribution() {
   const name  = document.getElementById("c-name").value.trim();
   const title = document.getElementById("c-title").value.trim();
   const cat   = document.getElementById("c-cat").value;
   const link  = document.getElementById("c-link").value.trim();
   const desc  = document.getElementById("c-desc").value.trim();
-  if (!name || !title || !cat || !link) { showAlert("c-alert","error","Please fill all required fields."); return; }
+  if (!name||!title||!cat||!link) { showAlert("c-alert","error","Please fill all required fields."); return; }
   if (!link.startsWith("https://drive.google.com")) { showAlert("c-alert","error","Please paste a valid Google Drive link."); return; }
-
   const btn = document.getElementById("c-submit-btn");
-  btn.disabled = true; btn.innerHTML = `<span class="spinner"></span>Sending…`;
+  btn.disabled=true; btn.innerHTML=`<span class="spinner"></span>Sending…`;
   try {
     await emailjs.send(CONFIG.emailjs_service_id, CONFIG.emailjs_template_id, {
-      to_email:    CONFIG.admin_email,
-      from_name:   name,
-      file_title:  title,
-      category:    cat,
-      drive_link:  link,
-      description: desc || "None.",
-      sent_at:     new Date().toLocaleString("en-IN")
+      to_email:CONFIG.admin_email, from_name:name, file_title:title,
+      category:cat, drive_link:link, description:desc||"None.", sent_at:new Date().toLocaleString("en-IN")
     });
-    showAlert("c-alert", "success", "✅ Sent! The admin will review and add it to the Drive folder. Thank you, " + name.split("—")[0].trim() + "!");
-    ["c-name","c-title","c-link","c-desc"].forEach(id => document.getElementById(id).value = "");
-    document.getElementById("c-cat").value = "";
-  } catch(err) {
-    showAlert("c-alert","error","Could not send. Check your internet connection and try again.");
-    console.error(err);
-  }
-  btn.disabled = false; btn.innerHTML = "Send to Admin";
+    showAlert("c-alert","success","✅ Sent! The admin will review and add it to the Drive folder. Thank you, "+name.split("—")[0].trim()+"!");
+    ["c-name","c-title","c-link","c-desc"].forEach(id=>document.getElementById(id).value="");
+    document.getElementById("c-cat").value="";
+  } catch(err) { showAlert("c-alert","error","Could not send. Check your internet connection."); console.error(err); }
+  btn.disabled=false; btn.innerHTML="Send to Admin";
 }
 
 // ─────────────────────────────────────────────
@@ -501,23 +539,114 @@ function loginVolunteer() {
   const pass = document.getElementById("l-pass").value;
   const name = document.getElementById("l-name").value.trim();
   if (!name) { showAlert("l-alert","error","Enter your name."); return; }
-  if (pass !== CONFIG.volunteer_password) { showAlert("l-alert","error","Incorrect password. Ask your administrator."); return; }
-  isVolunteer = true; volName = name;
+  if (pass !== getVolPass()) { showAlert("l-alert","error","Incorrect password. Ask your administrator."); return; }
+  isVolunteer=true; volName=name;
   closeModal("login-modal");
-  document.getElementById("role-badge").textContent = "Volunteer";
+  document.getElementById("role-badge").textContent="Volunteer";
   document.getElementById("role-badge").classList.add("contributor");
-  document.getElementById("vol-banner").style.display = "flex";
-  document.getElementById("vol-name-display").textContent = name;
-  document.getElementById("vol-login-btn").style.display = "none";
-  // Show instructions
-  setTimeout(() => openModal("vol-help-modal"), 300);
+  document.getElementById("vol-banner").style.display="flex";
+  document.getElementById("vol-name-display").textContent=name;
+  document.getElementById("vol-login-btn").style.display="none";
+  document.getElementById("admin-login-btn").style.display="none";
+  setTimeout(()=>openModal("vol-help-modal"),300);
 }
 function logoutVolunteer() {
-  isVolunteer = false; volName = "";
-  document.getElementById("role-badge").textContent = "Student";
+  isVolunteer=false; volName="";
+  document.getElementById("role-badge").textContent="Student";
   document.getElementById("role-badge").classList.remove("contributor");
-  document.getElementById("vol-banner").style.display = "none";
-  document.getElementById("vol-login-btn").style.display = "";
+  document.getElementById("vol-banner").style.display="none";
+  document.getElementById("vol-login-btn").style.display="";
+  document.getElementById("admin-login-btn").style.display="";
+}
+
+// ─────────────────────────────────────────────
+// ADMIN LOGIN / LOGOUT
+// ─────────────────────────────────────────────
+function openAdminLoginModal() { clearAlert("al-alert"); document.getElementById("al-pass").value=""; openModal("admin-login-modal"); }
+function loginAdmin() {
+  const pass = document.getElementById("al-pass").value;
+  if (pass !== CONFIG.admin_password) { showAlert("al-alert","error","Incorrect admin password."); return; }
+  isAdmin = true;
+  closeModal("admin-login-modal");
+  document.getElementById("role-badge").textContent="Admin";
+  document.getElementById("role-badge").style.background="#E6F1FB";
+  document.getElementById("role-badge").style.color="#185FA5";
+  document.getElementById("role-badge").style.borderColor="#B5D4F4";
+  document.getElementById("admin-banner").style.display="flex";
+  document.getElementById("admin-login-btn").style.display="none";
+  document.getElementById("vol-login-btn").style.display="none";
+}
+function logoutAdmin() {
+  isAdmin=false;
+  document.getElementById("role-badge").textContent="Student";
+  document.getElementById("role-badge").style.background="";
+  document.getElementById("role-badge").style.color="";
+  document.getElementById("role-badge").style.borderColor="";
+  document.getElementById("admin-banner").style.display="none";
+  document.getElementById("admin-login-btn").style.display="";
+  document.getElementById("vol-login-btn").style.display="";
+}
+
+// ─────────────────────────────────────────────
+// ADMIN PANEL — VOLUNTEER MANAGEMENT
+// ─────────────────────────────────────────────
+function openAdminPanel() {
+  renderVolList();
+  document.getElementById("current-vol-pass").textContent = getVolPass();
+  document.getElementById("new-vol-pass").value = "";
+  document.getElementById("new-vol-name").value = "";
+  clearAlert("ap-alert");
+  openModal("admin-panel-modal");
+}
+
+function renderVolList() {
+  const vols = getVolunteers();
+  document.getElementById("vol-count").textContent = vols.length;
+  if (!vols.length) {
+    document.getElementById("vol-list").innerHTML = `<div style="font-size:13px; color:#888; padding:8px 0;">No volunteers added yet.</div>`;
+    return;
+  }
+  document.getElementById("vol-list").innerHTML = vols.map((v,i) => `
+    <div style="display:flex; align-items:center; justify-content:space-between; background:#f5f4f0; border-radius:8px; padding:9px 12px;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div style="width:28px; height:28px; border-radius:50%; background:#E1F5EE; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; color:#0F6E56;">${escHtml(v.charAt(0).toUpperCase())}</div>
+        <span style="font-size:13px; font-weight:500;">${escHtml(v)}</span>
+      </div>
+      <button onclick="removeVolunteer(${i})" style="font-size:11px; padding:4px 10px; border-radius:6px; border:1px solid #993C1D; background:white; color:#993C1D; cursor:pointer;">Remove</button>
+    </div>`).join("");
+}
+
+function addVolunteer() {
+  const name = document.getElementById("new-vol-name").value.trim();
+  if (!name) { showAlert("ap-alert","error","Enter a name."); return; }
+  const vols = getVolunteers();
+  if (vols.length >= 20) { showAlert("ap-alert","error","Maximum 20 volunteers allowed."); return; }
+  if (vols.map(v=>v.toLowerCase()).includes(name.toLowerCase())) { showAlert("ap-alert","error","This volunteer is already in the list."); return; }
+  vols.push(name);
+  saveVolunteers(vols);
+  document.getElementById("new-vol-name").value = "";
+  renderVolList();
+  updateVolStat();
+  showAlert("ap-alert","success",`✅ ${name} added as a volunteer. Share the password with them.`);
+}
+
+function removeVolunteer(idx) {
+  const vols = getVolunteers();
+  const name = vols[idx];
+  vols.splice(idx,1);
+  saveVolunteers(vols);
+  renderVolList();
+  updateVolStat();
+  showAlert("ap-alert","success",`${name} removed from volunteers.`);
+}
+
+function changeVolPass() {
+  const newPass = document.getElementById("new-vol-pass").value.trim();
+  if (!newPass || newPass.length < 6) { showAlert("ap-alert","error","Password must be at least 6 characters."); return; }
+  saveVolPass(newPass);
+  document.getElementById("current-vol-pass").textContent = newPass;
+  document.getElementById("new-vol-pass").value = "";
+  showAlert("ap-alert","success","✅ Volunteer password updated! Share the new password with your team.");
 }
 
 // ─────────────────────────────────────────────
@@ -526,28 +655,27 @@ function logoutVolunteer() {
 function openModal(id)  { document.getElementById(id).classList.add("open"); }
 function closeModal(id) { document.getElementById(id).classList.remove("open"); }
 function clearAlert(id) { const el=document.getElementById(id); if(el){el.style.display="none"; el.textContent="";} }
-function showAlert(id, type, msg) {
+function showAlert(id,type,msg) {
   const el=document.getElementById(id); if(!el) return;
   el.className=`alert ${type}`; el.textContent=msg; el.style.display="block";
-  if(type==="success") setTimeout(()=>el.style.display="none", 7000);
+  if(type==="success") setTimeout(()=>el.style.display="none",7000);
 }
 function showError(msg) { const el=document.getElementById("error-banner"); el.textContent=msg; el.style.display="block"; }
-function hideError()    { const el=document.getElementById("error-banner"); el.style.display="none"; }
+function hideError()    { document.getElementById("error-banner").style.display="none"; }
 
 function fmtDate(d) {
   if (!d) return "—";
-  const diff = Math.floor((Date.now() - new Date(d)) / 86400000);
-  if (diff === 0) return "Today";
-  if (diff === 1) return "Yesterday";
-  if (diff < 7)  return `${diff} days ago`;
-  if (diff < 30) return `${Math.floor(diff/7)} week${Math.floor(diff/7)>1?"s":""} ago`;
-  return new Date(d).toLocaleDateString("en-IN", {day:"numeric", month:"short", year:"numeric"});
+  const diff = Math.floor((Date.now()-new Date(d))/86400000);
+  if (diff===0) return "Today"; if (diff===1) return "Yesterday";
+  if (diff<7) return `${diff} days ago`;
+  if (diff<30) return `${Math.floor(diff/7)} week${Math.floor(diff/7)>1?"s":""} ago`;
+  return new Date(d).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"});
 }
 function formatBytes(bytes) {
   if (!bytes) return null;
-  if (bytes < 1024) return bytes + " B";
-  if (bytes < 1048576) return (bytes/1024).toFixed(1) + " KB";
-  return (bytes/1048576).toFixed(1) + " MB";
+  if (bytes<1024) return bytes+" B";
+  if (bytes<1048576) return (bytes/1024).toFixed(1)+" KB";
+  return (bytes/1048576).toFixed(1)+" MB";
 }
 function escHtml(s)  { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 function escAttr(s)  { return String(s).replace(/"/g,"&quot;"); }
@@ -556,3 +684,4 @@ document.querySelectorAll(".modal-overlay").forEach(o => o.addEventListener("cli
 </script>
 </body>
 </html>
+
